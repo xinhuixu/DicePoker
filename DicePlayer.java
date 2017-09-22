@@ -21,6 +21,12 @@ public class DicePlayer {
    * @param name The player's name
     */   
   public DicePlayer(String name) {
+      playerName = name;
+      for (int i = 0; i<hand; i++){
+	  FiveDice[i] = new Die(); //need to initiate Die objects
+	  FiveDice[i].setFaceValue(FiveDice[i].roll());
+      }
+      
   }
   
   /**
@@ -28,14 +34,21 @@ public class DicePlayer {
    * If no name is provided, the default is Dave.
     */   
   public DicePlayer() {
-    // Your code here
+      playerName = "dave";
+      for (int i = 0; i<hand; i++){
+	  FiveDice[i] = new Die();
+	  FiveDice[i].setFaceValue(FiveDice[i].roll());
+      }
   }
 
    /**
    * Simulates the player rolling the five dice.
    */
   public void playNewHand() {
-    // Your code here
+      for (int i = 0; i<hand; i++){
+	  Die die = FiveDice[i];
+	  die.setFaceValue(die.roll());
+      }
   }
   
    /** Prints the name of the player, 
@@ -43,8 +56,10 @@ public class DicePlayer {
     * @return The hand that the player holds
     */
   public String toString()  {
-    String s = "";
-    // Your code here
+    String s = playerName + " rolled ";
+    for (int i = 0; i<hand; i++){
+	s += FiveDice[i] + " ";
+    }
     return  s;
   }
   
@@ -54,7 +69,9 @@ public class DicePlayer {
     */
     public int[] getValues() {
       int [] values = new int[hand];
-      // Your code here
+      for (int i = 0; i<hand; i++){
+	  values[i] = FiveDice[i].getFaceValue();
+      }
       return values;
     }
     
@@ -63,8 +80,7 @@ public class DicePlayer {
    * @return The name of the player
    */
     public String getName(){
-      // Your code here
-      return "";
+      return playerName;
     }
     
     /**
@@ -72,14 +88,14 @@ public class DicePlayer {
      * @param newName The new name to use
      */
     public void setName(String newName){
-      // Your code here
+	playerName = newName;
     }
   
    /**
    Main method, used to test the class.
    **/
     public static void main (String args[]) {
-      DicePlayer hal = new DicePlayer();
+      DicePlayer hal = new DicePlayer("hal");
       System.out.println(hal);
       DicePlayer dave = new DicePlayer();
       System.out.println(dave);
