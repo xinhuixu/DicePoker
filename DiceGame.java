@@ -1,10 +1,11 @@
-/**Code template 
+/**
+  * Code template - DiceGame.java
   * Simulates a Dice Poker game played between the computer and user.
   * This class definition contains a main() method that assumes 
   * that the user enters a name and an integer in the command line, for example: 
   * java PlayDice Wendy 7
   * If no arguments are passed, it will assume the call was with Dave and 5
-  * @author   CS230 Staff 
+  * @author   CS230 Staff & Xinhui Xu & Julia McDonald
   */
 
 public class DiceGame {
@@ -46,12 +47,11 @@ public class DiceGame {
         }
       }
       if( !same ){
-        input[ i ] = diceResults[ index ];
+        diceResults[ index ] = input[ i ];
         index++;
       }
       same = false;
     }
-    
   }
   
   /** Given an input array storing five dice values, 
@@ -60,13 +60,50 @@ public class DiceGame {
    * @return    The rank of the hand; an integer between 0 and 6
    */
   private int getRank (int[] input) {
-    //6: 5 of a kind 
-    //5: 4 of a kind 
-    //4: 3 of one value and 2 of another 
-    //3: 3 of one value and 2 different values
-    //2: 2 pairs and 1 different value
-    //1: 1 pair and 3 different values
-    //0: Nothing; all 5 dice have different values
+    //6: 5 of a kind ( 1 val )
+    //5: 4 of a kind ( 2 val )
+    //4: 3 of one value and 2 of another ( 2 val )
+    //3: 3 of one value and 2 different values ( 3 val )
+    //2: 2 pairs and 1 different value ( 3 val )
+    //1: 1 pair and 3 different values ( 4 val )
+    //0: Nothing; all 5 dice have different values ( 5 val )
+    
+    int[] diceResults = new int[ 5 ];
+    accumulateValues( input, diceResults );
+    
+    int[] valueCounter = new int[ 6 ];
+    for( int i = 0; i < input.length; i++ ){
+      valueCounter[ input[ i ] - 1 ]++;
+    }
+    
+    int numUnique = 0;
+    for( int i = 0; i < diceResults.length; i++ ){
+      if( diceResults[ i ] != 0 )
+        numUnique++;
+    }
+    
+    switch( numUnique ){
+      case 1:
+        return 6;
+      case 4:
+        return 1;
+      case 5:
+        return 0;
+      case 2:{
+        for( int i = 0; i < valueCounter.length; i++ ){
+          if( valueCounter[ i ] == 4 )
+            return 5;
+        }
+        return 4;
+       }
+      case 3: {
+        for( int i = 0; i < valueCounter.length; i++ ){
+          if( valueCounter[ i ] == 3 )
+            return 3;
+        }
+        return 2;
+      }
+    }
     
     return 0;
   }
@@ -79,35 +116,48 @@ public class DiceGame {
     */
   private int playOneRound() {
     theComputer.playNewHand();
-    System.out.println( theComputer + ": " );
     int compRank = getRank( theComputer.getValues() );
-    switch( compRank ){
-      case 0:
-        
-      case 1:
-        
-      case 2:
-        
-      case 3:
-        
-      case 4:
-        
-      case 5:
-        
-      case 6:
-        
-    }
+    System.out.println( theComputer + rankString( compRank ));
+    
     thePlayer.playNewHand();
-    if( getRank( thePlayer.getValues() ) > compRank)
-       return 1;
-    if( getRank( thePlayer.getValues() ) < compRank)
-       return 0;
+    int playRank = getRank( thePlayer.getValues() );
+    System.out.println( thePlayer + rankString( playRank ));
+    
+    if( playRank > compRank){
+      return 1;
+    }
+    if( playRank < compRank){
+      return 0;
+    }
     return 2;
   }
+
+  /**
+   * This private helper method returns strings describing the ranks of hands
+   * 
+   * @param rank  the rank value of a hand
+   * @return a string describing the rank
+   */
+  private String rankString( int rank ){
+    switch( rank ){
+      case 0:
+        return "Nothing";
+      case 1:
+        return "One pair";
+      case 2:
+        return "Two pairs";
+      case 3:
+        return "Three of a kind";
+      case 4:
+        return "Full house";
+      case 5:
+        return "Four of a kind";
+      case 6:
+        return "Five of a kind";
+    }
+    return "";
+  }
   
-
-
-
   /**  Simulates the playing of numRounds of the Dice Poker game between the
     * Computer and player, and prints the winner at the end.
     */
@@ -119,10 +169,18 @@ public class DiceGame {
     System.out.println("Everything's running smoothly. How are you?");
     System.out.print("I'm completely operational and ");
     System.out.println("all my circuits are functioning perfectly.");
-    System.out.println("Would you like to play a game of Dice Poker? I play very well.");
+    System.out.println("Would you like to play a game of Dice Poker? I play very well.\n");
     
-   
-    // Your code here
+    //play the specified number of rounds and record wins
+    for( int i = 0; i < numRounds; i++ ){
+      System.out.println( "*** ROUND " + (i+1) );
+      
+      int winner = playOneRound();
+      if( winner == 1 ) pwin++;
+      else if( winner == 2 ) cwin++;
+      
+      System.out.println();
+    }
     
     // After all rounds played, determine the final winner of the game and print the results
     if (pwin>cwin) System.out.print("The game was won by "+ thePlayer.getName() + " with a score of " + pwin + " to " + cwin);
@@ -139,7 +197,6 @@ public class DiceGame {
 /** Start the homework by reading this method. 
  */
   public static void main (String args[]) {
-     
     String name = (args.length >  0)? args[0] : "Dave";  // the default
     int numRounds = (args.length >  1)? Integer.parseInt(args[1]) : 5; // the default
     // Create an instance of a new game and play the rounds
